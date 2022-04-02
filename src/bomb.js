@@ -5,6 +5,7 @@ export class Bomb {
         sprite.setGravityY(100);
         scene.physics.add.collider(sprite, scene.ground)
 
+        this.sprite = sprite;
         this.armed = true;
         this.boomed = false;
 
