@@ -1,3 +1,5 @@
+const { Bomb } = require('./bomb.js');
+
 export class GameScene extends Phaser.Scene {
     constructor() {
         super('GameScene');
@@ -16,10 +18,9 @@ export class GameScene extends Phaser.Scene {
         this.ground = this.physics.add.sprite(400, 550, 'ground');
         this.ground.setImmovable();
         this.player = this.add.image(400, 495, 'player');
-        this.bomb = this.physics.add.sprite(400, 300, 'bomb');
-        this.bomb.setBounce(0.3)
-        this.bomb.setGravityY(100);
-        this.physics.add.collider(this.bomb, this.ground);
+
+        this.bomb = new Bomb(this, this.physics.add.sprite(400, 300, 'bomb'), 5000);
+
         this.left_key = this.input.keyboard.addKey('left');
         this.right_key = this.input.keyboard.addKey('right');
     }
