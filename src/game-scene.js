@@ -41,9 +41,6 @@ export class GameScene extends Phaser.Scene {
             delay: 500,
             loop: true
         });
-
-        this.left_key = this.input.keyboard.addKey('left');
-        this.right_key = this.input.keyboard.addKey('right');
     }
 
     update() {
