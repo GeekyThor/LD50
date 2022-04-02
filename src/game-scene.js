@@ -34,8 +34,7 @@ export class GameScene extends Phaser.Scene {
         this.player = new Player(this, player_sprite, 3, 5, 400, 2000);
 
         this.bombs = [];
-        this.bomb = new SmallBomb(this, Consts.CANVAS_WIDTH / 2, Consts.CANVAS_HEIGHT / 2);
-        this.bombs.push(this.bomb);
+        this.bombs.push(new SmallBomb(this, Consts.CANVAS_WIDTH / 2, Consts.CANVAS_HEIGHT / 2));
 
         this.left_key = this.input.keyboard.addKey('left');
         this.right_key = this.input.keyboard.addKey('right');
@@ -43,5 +42,8 @@ export class GameScene extends Phaser.Scene {
 
     update() {
         this.player.update();
+        for (var bomb of this.bombs) {
+            bomb.update();
+        }
     }
 }

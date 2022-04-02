@@ -23,14 +23,14 @@ export class Bomb {
         this.boomed = false;
 
         this.timer_event = scene.time.addEvent({
-            callback: this.update,
+            callback: this.bomb_tick,
             callbackScope: this,
             delay: 1000,
             loop: true
         });
     }
 
-    update() { 
+    bomb_tick() { 
         if (this.armed && !this.boomed) {
             this.timer_time -= 1;
             if (this.timer_time == 0) {
@@ -61,6 +61,23 @@ export class Bomb {
 
     remove_explosion() {
         this.explosion.destroy();
+    }
+
+    update() {
+        // Ground friction
+        if (this.container.body != null) {
+            if (Phaser.Geom.Intersects.RectangleToRectangle(
+                this.container.getBounds(),
+                this.scene.ground.getBounds()
+            )) {
+                if (Math.abs(this.container.body.velocity.x) < 100) {
+                    this.container.body.setVelocityX(0);
+                }
+                this.container.body.setAccelerationX(-1000 * Math.sign(this.container.body.velocity.x)); 
+            } else {
+                this.container.body.setAccelerationX(0);
+            }
+        }
     }
 }
 
