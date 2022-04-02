@@ -13,7 +13,8 @@ export class Bomb {
         this.container.setSize(bomb.width, bomb.height);
         scene.physics.world.enable(this.container);
 
-        this.container.body.setBounce(0.3);
+        this.container.body.setCircle(7, 0, 7);
+        this.container.body.setBounce(1);
         this.container.body.setGravityY(300);
         this.container.body.setMaxVelocityY(300);
         this.container.body.collideWorldBounds = true;

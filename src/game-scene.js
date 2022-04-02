@@ -38,7 +38,7 @@ export class GameScene extends Phaser.Scene {
         this.bomb_spawn_event = this.time.addEvent({
             callback: this.spawn_bomb,
             callbackScope: this,
-            delay: 500,
+            delay: 100,
             loop: true
         });
     }
@@ -51,6 +51,10 @@ export class GameScene extends Phaser.Scene {
     }
 
     spawn_bomb() {
-        this.bombs.push(new SmallBomb(this, Phaser.Math.Between(20, Consts.CANVAS_WIDTH - 20), -20));
+        var new_bomb = new SmallBomb(this, Phaser.Math.Between(20, Consts.CANVAS_WIDTH - 20), -20);
+        for (var bomb of this.bombs) {
+            this.physics.add.collider(new_bomb.container, bomb.container);
+        }
+        this.bombs.push(new_bomb);
     }
 }
