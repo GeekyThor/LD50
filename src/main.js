@@ -1,5 +1,6 @@
 const Phaser = require('phaser');
 const { GameScene } = require('./game-scene.js');
+const Consts = require('./consts.js');
 
 const gameConfig = {
     type: Phaser.AUTO,
@@ -8,8 +9,8 @@ const gameConfig = {
         default: 'arcade',
         arcade: { debug:false }
     },
-    width: 800,
-    height: 600,
+    width: Consts.CANVAS_WIDTH,
+    height: Consts.CANVAS_HEIGHT,
     scene: [ GameScene ]
 }
 

@@ -1,7 +1,6 @@
-import { Time } from "phaser";
-
 export class Bomb {
     constructor(scene, sprite, time_to_boom) {
+        sprite.scale = 1.5;
         sprite.setBounce(0.3)
         sprite.setGravityY(100);
         scene.physics.add.collider(sprite, scene.ground)

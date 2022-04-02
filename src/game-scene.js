@@ -1,4 +1,7 @@
+const Consts = require('./consts.js');
 const { Bomb } = require('./bomb.js');
+
+const PLAYER_HEIGHT = 20;
 
 export class GameScene extends Phaser.Scene {
     constructor() {
@@ -10,16 +13,25 @@ export class GameScene extends Phaser.Scene {
         this.load.image('bg', 'assets/bg.png');
         this.load.image('ground', 'assets/ground.png');
         this.load.image('player', 'assets/player.png');
-        this.load.image('bomb', 'assets/bomb.png');
+        
+        this.load.spritesheet('small_bomb', 'assets/bombs/small.png', { frameWidth: 15, frameHeight: 20 });
     }
 
     create() {
-        this.add.image(400, 300, 'bg');
-        this.ground = this.physics.add.sprite(400, 550, 'ground');
-        this.ground.setImmovable();
-        this.player = this.add.image(400, 495, 'player');
+        this.add.image(Consts.CANVAS_WIDTH / 2, Consts.CANVAS_HEIGHT / 2, 'bg');
 
-        this.bomb = new Bomb(this, this.physics.add.sprite(400, 300, 'bomb'), 5000);
+        this.ground = this.physics.add.sprite(Consts.CANVAS_WIDTH / 2, Consts.CANVAS_HEIGHT, 'ground');
+        this.ground.y -= this.ground.height / 2;
+        this.ground.setImmovable();
+
+        this.player = this.add.image(
+            Consts.CANVAS_WIDTH / 2, 
+            Consts.CANVAS_HEIGHT - this.ground.height - PLAYER_HEIGHT / 2, 
+            'player');
+        this.player.scale = PLAYER_HEIGHT / this.player.height;
+
+        var bomb_sprite = this.physics.add.sprite(Consts.CANVAS_WIDTH / 2, Consts.CANVAS_HEIGHT / 2, 'small_bomb');
+        this.bomb = new Bomb(this, bomb_sprite, 5000);
 
         this.left_key = this.input.keyboard.addKey('left');
         this.right_key = this.input.keyboard.addKey('right');
