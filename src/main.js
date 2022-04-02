@@ -4,6 +4,10 @@ const { GameScene } = require('./game-scene.js');
 const gameConfig = {
     type: Phaser.AUTO,
     parent: 'content',
+    physics: {
+        default: 'arcade',
+        arcade: { debug:false }
+    },
     width: 800,
     height: 600,
     scene: [ GameScene ]

@@ -13,9 +13,13 @@ export class GameScene extends Phaser.Scene {
 
     create() {
         this.add.image(400, 300, 'bg');
-        this.add.image(400, 550, 'ground');
+        this.ground = this.physics.add.sprite(400, 550, 'ground');
+        this.ground.setImmovable();
         this.player = this.add.image(400, 495, 'player');
-        this.add.image(400, 300, 'bomb');
+        this.bomb = this.physics.add.sprite(400, 300, 'bomb');
+        this.bomb.setBounce(0.3)
+        this.bomb.setGravityY(100);
+        this.physics.add.collider(this.bomb, this.ground);
         this.left_key = this.input.keyboard.addKey('left');
         this.right_key = this.input.keyboard.addKey('right');
     }
