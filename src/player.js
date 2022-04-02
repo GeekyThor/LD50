@@ -23,8 +23,8 @@ export class Player {
     {
         var closest = null;
         var min_distance = null;
-        for (const bomb of this.scene.bomb_group.getChildren()) {
-            var distance = Phaser.Math.Distance.Between(bomb.x, bomb.y, this.sprite.x, this.sprite.y);
+        for (const bomb of this.scene.bombs) {
+            var distance = Phaser.Math.Distance.Between(bomb.container.x, bomb.container.y, this.sprite.x, this.sprite.y);
             
             if (closest == null)
             {
@@ -51,6 +51,11 @@ export class Player {
         if (closest[1] != null && closest[1] <= 10)
         {
             this.picked_up = closest[0];
+
+            this.picked_up.container.body.setGravityY(0);
+            this.picked_up.container.x = this.sprite.x;
+            this.picked_up.container.y = this.sprite.y;
+
             this.diffuse_timer = this.scene.time.addEvent({
                 callback: this.diffuse,
                 callbackScope: this,
@@ -66,8 +71,12 @@ export class Player {
             return;
         
         var throw_angle = -Phaser.Math.Angle.Between(this.sprite.x, this.sprite.y, this.scene.input.activePointer.x, this.scene.input.activePointer.y) + Math.PI / 2;
-        this.picked_up.setVelocity(Math.sin(throw_angle) * this.throw_vel,
-                                   Math.cos(throw_angle) * this.throw_vel)
+        this.picked_up.container.body.setVelocity(
+            Math.sin(throw_angle) * this.throw_vel,
+            Math.cos(throw_angle) * this.throw_vel
+        )
+        this.picked_up.container.body.setGravityY(300);
+
         this.picked_up = null;
         if (this.diffuse_timer != null)
             this.diffuse_timer.remove();
@@ -75,10 +84,11 @@ export class Player {
 
     diffuse()
     {
-        if (this.picked_up != null)
-        {
-            this.picked_up.armed = false;
-            console.log("Diffuse!");
+        if (this.picked_up != null) {
+            if (this.picked_up.armed && !this.picked_up.boomed) {
+                this.picked_up.armed = false;
+                console.log("Diffuse!");
+            }
         } 
     }
 
@@ -99,8 +109,8 @@ export class Player {
         }
         if (this.picked_up != null)
         {
-            this.picked_up.x = this.sprite.x;
-            this.picked_up.y = this.sprite.y;
+            this.picked_up.container.x = this.sprite.x;
+            this.picked_up.container.y = this.sprite.y;
         }
 
         // Throw
