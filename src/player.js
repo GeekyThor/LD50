@@ -24,6 +24,7 @@ export class Player {
         var closest = null;
         var min_distance = null;
         for (const bomb of this.scene.bombs) {
+            // Prevents the player from trying to pick up an exploded bomb
             if (bomb.container.body != null) {
                 var distance = Phaser.Math.Distance.Between(bomb.container.x, bomb.container.y, this.sprite.x, this.sprite.y);
                 
@@ -46,8 +47,14 @@ export class Player {
 
     handle_pickup()
     {
-        if (this.picked_up != null)
-            return;
+        if (this.picked_up != null) {
+            // In case a bomb exploded while holding it
+            if (this.picked_up.container.body == null) {
+                this.picked_up = null;
+            } else {
+                return;
+            }
+        }
         
         var closest = this.get_closest_bomb();
         if (closest[1] != null && closest[1] <= 10)
@@ -71,6 +78,12 @@ export class Player {
     {
         if (this.picked_up == null)
             return;
+
+        // In case a bomb exploded while holding it
+        if (this.picked_up.container.body == null) {
+            this.picked_up = null;
+            return;
+        }
         
         var throw_angle = -Phaser.Math.Angle.Between(this.sprite.x, this.sprite.y, this.scene.input.activePointer.x, this.scene.input.activePointer.y) + Math.PI / 2;
         this.picked_up.container.body.setVelocity(
