@@ -1,25 +1,23 @@
 export class GameScene extends Phaser.Scene {
     constructor() {
         super('GameScene');
-        this.move_speed = 5;
+        this.move_speed = 3;
     }
 
     preload() {
-        this.load.image('geekythor', 'assets/geekythor.jpg');
+        this.load.image('bg', 'assets/bg.png');
+        this.load.image('player', 'assets/player.png');
     }
 
     create() {
-        this.geeky_thor = this.add.image(400, 300, 'geekythor');
-        this.up_key = this.input.keyboard.addKey('up');
-        this.down_key = this.input.keyboard.addKey('down');
+        this.bg = this.add.image(400, 300, 'bg');
+        this.player = this.add.image(400, 495, 'player');
         this.left_key = this.input.keyboard.addKey('left');
         this.right_key = this.input.keyboard.addKey('right');
     }
 
     update() {
-        this.geeky_thor.y -= this.input.keyboard.checkDown(this.up_key) ? this.move_speed : 0;
-        this.geeky_thor.y += this.input.keyboard.checkDown(this.down_key) ? this.move_speed : 0;
-        this.geeky_thor.x -= this.input.keyboard.checkDown(this.left_key) ? this.move_speed : 0;
-        this.geeky_thor.x += this.input.keyboard.checkDown(this.right_key) ? this.move_speed : 0;
+        this.player.x -= this.input.keyboard.checkDown(this.left_key) ? this.move_speed : 0;
+        this.player.x += this.input.keyboard.checkDown(this.right_key) ? this.move_speed : 0;
     }
 }
