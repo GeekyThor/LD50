@@ -30,7 +30,7 @@ export class GameScene extends Phaser.Scene {
             Consts.CANVAS_HEIGHT - this.ground.height - PLAYER_HEIGHT / 2, 
             'player');
         player_sprite.scale = PLAYER_HEIGHT / player_sprite.height;
-        this.player = new Player(this, player_sprite, 3, 5, 5, 5);
+        this.player = new Player(this, player_sprite, 3, 5, 200, 2000);
 
         this.bomb_group = this.add.group();
         this.bomb = new SmallBomb(this, Consts.CANVAS_WIDTH / 2, Consts.CANVAS_HEIGHT / 2);
