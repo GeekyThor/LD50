@@ -35,16 +35,32 @@ export class Bomb {
             this.timer_time -= 1;
             if (this.timer_time == 0) {
                 this.timer_event.loop = false;
-                var boom = this.scene.add.circle(this.container.x, this.container.y, this.boom_radius, 0xff0000, 1);
-                this.scene.physics.add.overlap(this.scene.player, boom, this.hit, null, this);
+
+                this.explosion = this.scene.add.circle(this.container.x, this.container.y, this.boom_radius, 0xff8800);
+                this.scene.time.addEvent({
+                    callback: this.remove_explosion,
+                    callbackScope: this,
+                    delay: 200,
+                    loop: false
+                });
+
+                if (Phaser.Geom.Intersects.CircleToRectangle(
+                    new Phaser.Geom.Circle(this.container.x, this.container.y, this.boom_radius),
+                    this.scene.player.sprite.getBounds()
+                )) {
+                    console.log('hit');
+                }
+
+                this.container.destroy();
                 this.boomed = true;
+            } else {
+                this.timer_text.text = String(this.timer_time);
             }
-            this.timer_text.text = String(this.timer_time);
         }
     }
 
-    hit(player, boom) {
-        console.log('hit');
+    remove_explosion() {
+        this.explosion.destroy();
     }
 }
 
