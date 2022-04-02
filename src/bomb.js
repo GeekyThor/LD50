@@ -48,7 +48,7 @@ export class Bomb {
                     new Phaser.Geom.Circle(this.container.x, this.container.y, this.boom_radius),
                     this.scene.player.sprite.getBounds()
                 )) {
-                    console.log('hit');
+                    this.scene.player.hit();
                 }
 
                 this.container.destroy();

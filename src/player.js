@@ -24,18 +24,20 @@ export class Player {
         var closest = null;
         var min_distance = null;
         for (const bomb of this.scene.bombs) {
-            var distance = Phaser.Math.Distance.Between(bomb.container.x, bomb.container.y, this.sprite.x, this.sprite.y);
-            
-            if (closest == null)
-            {
-                closest = bomb;
-                min_distance = distance;
-            }
+            if (bomb.container.body != null) {
+                var distance = Phaser.Math.Distance.Between(bomb.container.x, bomb.container.y, this.sprite.x, this.sprite.y);
+                
+                if (closest == null)
+                {
+                    closest = bomb;
+                    min_distance = distance;
+                }
 
-            if (distance < min_distance)
-            {
-                closest = bomb;
-                min_distance = distance;
+                if (distance < min_distance)
+                {
+                    closest = bomb;
+                    min_distance = distance;
+                }
             }
         }
 
@@ -120,5 +122,15 @@ export class Player {
         }
 
         // Diffuse
+    }
+
+    hit() {
+        if (this.hp > 0) {
+            this.hp -= 1;
+            console.log("Remaining hp: ", this.hp);
+        }
+        if (this.hp == 0) {
+            console.log("Game over!");
+        }
     }
 }
