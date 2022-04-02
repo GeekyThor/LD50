@@ -1,6 +1,6 @@
 const Consts = require('./consts.js');
 const { Player } = require('./player.js');
-const { Bomb } = require('./bomb.js');
+const { SmallBomb } = require('./bomb.js');
 
 const PLAYER_HEIGHT = 20;
 
@@ -33,15 +33,15 @@ export class GameScene extends Phaser.Scene {
         this.player = new Player(this, player_sprite, 3, 5, 5, 5);
 
         this.bomb_group = this.add.group();
-        var bomb_sprite = this.physics.add.sprite(Consts.CANVAS_WIDTH / 2, Consts.CANVAS_HEIGHT / 2, 'small_bomb');
-        this.bomb = new Bomb(this, bomb_sprite, 5000);
-        this.bomb_group.add(this.bomb.sprite);
+        this.bomb = new SmallBomb(this, Consts.CANVAS_WIDTH / 2, Consts.CANVAS_HEIGHT / 2);
+        this.bomb_group.add(this.bomb.container);
 
         this.left_key = this.input.keyboard.addKey('left');
         this.right_key = this.input.keyboard.addKey('right');
     }
 
     update() {
-        this.player.update()
+        this.player.update();
+        this.bomb.update();
     }
 }
