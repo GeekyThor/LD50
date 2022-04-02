@@ -1,11 +1,13 @@
 export class Bomb {
-    constructor(scene, x, y, sprite_name, sprite_scale, time_to_boom) {
+    constructor(scene, x, y, sprite_name, bomb_width, boom_radius, time_to_boom) {
+        this.scene = scene;
+        this.boom_radius = boom_radius;
+        
         var bomb = scene.add.image(0, 0, sprite_name);
-        bomb.scale = sprite_scale;
+        bomb.scale = bomb_width / bomb.width;
 
-        this.start_time = Date.now();
-        this.time_to_boom = time_to_boom;
-        this.timer_text = scene.add.text(-5, -4, String(Math.ceil(this.time_to_boom / 1000)));
+        this.timer_time = time_to_boom;
+        this.timer_text = scene.add.text(-5, -4, String(this.timer_time));
 
         this.container = scene.add.container(x, y, [ bomb, this.timer_text ]);
         this.container.setSize(bomb.width, bomb.height);
@@ -18,30 +20,34 @@ export class Bomb {
         this.armed = true;
         this.boomed = false;
 
-        scene.time.addEvent({
-            callback: this.boom,
+        this.timer_event = scene.time.addEvent({
+            callback: this.update,
             callbackScope: this,
-            delay: time_to_boom,
-            loop: false
-        });;
+            delay: 1000,
+            loop: true
+        });
     }
 
     update() { 
         if (this.armed && !this.boomed) {
-            this.timer_text.text = String(Math.ceil((this.time_to_boom + this.start_time - Date.now()) / 1000));
+            this.timer_time -= 1;
+            if (this.timer_time == 0) {
+                this.timer_event.loop = false;
+                var boom = this.scene.add.circle(this.container.x, this.container.y, this.boom_radius, 0xff0000, 1);
+                this.scene.physics.add.overlap(this.scene.player, boom, this.hit, null, this);
+                this.boomed = true;
+            }
+            this.timer_text.text = String(this.timer_time);
         }
     }
 
-    boom() {
-        if (this.armed && !this.boomed) {
-            console.log("boom");
-            this.boomed = true;
-        }
+    hit(player, boom) {
+        console.log('hit');
     }
 }
 
 export class SmallBomb extends Bomb {
     constructor(scene, x, y) {
-        super(scene, x, y, 'small_bomb', 1, 5000);
+        super(scene, x, y, 'small_bomb', 15, 25, 5);
     }
 }

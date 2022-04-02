@@ -42,6 +42,5 @@ export class GameScene extends Phaser.Scene {
 
     update() {
         this.player.update();
-        this.bomb.update();
     }
 }
