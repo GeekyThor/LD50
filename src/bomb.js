@@ -50,9 +50,9 @@ export class Bomb {
                 )) {
                     this.scene.player.hit();
                 }
-
-                this.container.destroy();
+                
                 this.boomed = true;
+                this.container.destroy();
             } else {
                 this.timer_text.text = String(this.timer_time);
             }
@@ -65,7 +65,7 @@ export class Bomb {
 
     update() {
         // Ground friction
-        if (this.container.body != null) {
+        if (!this.boomed) {
             if (Phaser.Geom.Intersects.RectangleToRectangle(
                 this.container.getBounds(),
                 this.scene.ground.getBounds()
