@@ -1,3 +1,4 @@
+const { Player } = require('./player.js');
 const { Bomb } = require('./bomb.js');
 
 export class GameScene extends Phaser.Scene {
@@ -17,16 +18,13 @@ export class GameScene extends Phaser.Scene {
         this.add.image(400, 300, 'bg');
         this.ground = this.physics.add.sprite(400, 550, 'ground');
         this.ground.setImmovable();
-        this.player = this.add.image(400, 495, 'player');
-
-        this.bomb = new Bomb(this, this.physics.add.sprite(400, 300, 'bomb'), 5000);
-
-        this.left_key = this.input.keyboard.addKey('left');
-        this.right_key = this.input.keyboard.addKey('right');
+        this.player = new Player(this, this.physics.add.sprite(400, 495, 'player'), 3, 5, 5, 5);
+        this.bomb_group = this.add.group();
+        this.bomb = new Bomb(this, this.physics.add.sprite(400, 300, 'bomb'), 5000)
+        this.bomb_group.add(this.bomb.sprite);
     }
 
     update() {
-        this.player.x -= this.input.keyboard.checkDown(this.left_key) ? this.move_speed : 0;
-        this.player.x += this.input.keyboard.checkDown(this.right_key) ? this.move_speed : 0;
+        this.player.update()
     }
 }
