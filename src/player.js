@@ -12,10 +12,10 @@ export class Player {
         this.picked_up = null;
         this.scene.physics.add.collider(sprite, scene.ground)
         this.sprite.setGravityY(300);
-        this.left_key = scene.input.keyboard.addKey('left');
-        this.right_key = scene.input.keyboard.addKey('right');
-        this.up_key = scene.input.keyboard.addKey('up');
-        this.pickup_key = scene.input.keyboard.addKey('F');
+        this.left_key = scene.input.keyboard.addKey('A');
+        this.right_key = scene.input.keyboard.addKey('D');
+        this.up_key = scene.input.keyboard.addKey('W');
+        this.pickup_key = scene.input.keyboard.addKey('SPACE');
     }
 
     get_closest_bomb()
@@ -53,6 +53,14 @@ export class Player {
             this.picked_up = closest[0];
     }
 
+    handle_throw()
+    {
+        var throw_angle = -Phaser.Math.Angle.Between(this.sprite.x, this.sprite.y, this.scene.input.activePointer.x, this.scene.input.activePointer.y) + Math.PI / 2;
+        this.picked_up.setVelocity(Math.sin(throw_angle) * this.throw_vel,
+                                   Math.cos(throw_angle) * this.throw_vel)
+        this.picked_up = null;
+    }
+
     update()
     {
         // Movement
@@ -63,7 +71,7 @@ export class Player {
             this.sprite.setVelocityY(-200);
         }
 
-        // pickup
+        // Pickup
         if (this.scene.input.keyboard.checkDown(this.pickup_key))
         {
             this.handle_pickup();
@@ -72,6 +80,12 @@ export class Player {
         {
             this.picked_up.x = this.sprite.x;
             this.picked_up.y = this.sprite.y;
+        }
+
+        // Throw
+        if (this.scene.input.activePointer.leftButtonDown() && this.picked_up != null)
+        {
+            this.handle_throw();
         }
     }
 }
