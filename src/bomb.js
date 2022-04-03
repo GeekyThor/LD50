@@ -36,7 +36,7 @@ export class TimedBomb {
         this.timer_text = scene.add.text(-5, -4, String(Math.ceil(this.timer_time)));
 
         this.container = scene.add.container(x, y, [ this.bomb, this.timer_text ]);
-        this.container.setSize(this.bomb.width, this.bomb.height);
+        this.container.setSize(bomb_width, this.bomb.height * bomb_width / this.bomb.width);
         scene.physics.world.enable(this.container);
 
         this.container.body.setGravityY(300);
@@ -229,7 +229,7 @@ export class SmallOnImpactBomb extends OnImpactBomb {
 
 export class NukeBomb extends TimedBomb {
     constructor(scene, x, y) {
-        super(scene, x, y, 'nuke_bomb', 30, 1000, 400, 10, 10, 20);
+        super(scene, x, y, 'nuke_bomb', 30, 1000, 350, 10, 5, 20);
         this.container.body.setCollideWorldBounds(true, 0, 0);
         this.container.body.setBounce(0);
         this.container.body.pushable = false;
