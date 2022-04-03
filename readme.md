@@ -1,3 +1,14 @@
+# Tick Tock
+
+## Game controls
+**A** and **D** to move left and right.  
+**W** to jump.  
+**Space** to pick up a bomb and start diffusing it.  
+Aim and throw with the **LMB** (left mouse button).
+
+## Play online
+https://mrnomm.itch.io/ticktock
+
 ## Build and run locally
 ```sh
 git clone git@github.com:GeekyThor/LD50.git
