@@ -141,11 +141,11 @@ export class Player {
             return;
         }
         
-        var throw_angle = -Phaser.Math.Angle.Between(this.container.x, this.container.y, this.scene.input.activePointer.x, this.scene.input.activePointer.y) + Math.PI / 2;
+        var throw_angle = Phaser.Math.Angle.Between(this.container.x, this.container.y, this.scene.input.activePointer.x, this.scene.input.activePointer.y);
         var throw_vel = this.throw_vel / (1 + this.picked_up.mass);
         this.picked_up.container.body.setVelocity(
-            Math.sin(throw_angle) * throw_vel,
-            Math.cos(throw_angle) * throw_vel
+            Math.cos(throw_angle) * throw_vel,
+            Math.sin(throw_angle) * throw_vel
         )
         this.picked_up.container.body.setGravityY(300);
 
