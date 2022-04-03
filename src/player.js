@@ -1,18 +1,62 @@
-export class Player {
+const Consts = require('./consts.js');
 
-    constructor(scene, sprite, move_speed, hp, throw_vel, diffuse_time)
+export class Player {
+    constructor(scene, move_speed, hp, throw_vel, diffuse_time)
     {
         this.scene = scene;
-        this.sprite = sprite;
         this.move_speed = move_speed;
         this.hp = hp;
         this.throw_vel = throw_vel;
         this.diffuse_time = diffuse_time;
         
+        this.sprite = this.scene.physics.add.sprite(
+            Consts.CANVAS_WIDTH / 2, 
+            Consts.CANVAS_HEIGHT - scene.ground.height, 
+            'player',
+            0);
+        this.sprite.y -= this.sprite.height / 2;
+        this.sprite.setGravityY(300);
+        this.scene.physics.world.enable(this.sprite);
+        this.scene.physics.add.collider(this.sprite, this.scene.ground);
+
+        this.sprite.anims.create({
+            key: 'idle',
+            frames: [ { key: 'player', frame: 0 }],
+            frameRate: 5
+        })
+        this.sprite.anims.create({
+            key: 'right',
+            frames: this.sprite.anims.generateFrameNumbers('player', { start: 1, end: 2 }),
+            frameRate: 5,
+            repeat: -1
+        });
+        this.sprite.anims.create({
+            key: 'left',
+            frames: this.sprite.anims.generateFrameNumbers('player', { start: 3, end: 4 }),
+            frameRate: 5,
+            repeat: -1
+        });
+        this.sprite.anims.create({
+            key: 'idle-hold',
+            frames: [ { key: 'player', frame: 5 }],
+            frameRate: 5
+        })
+        this.sprite.anims.create({
+            key: 'right-hold',
+            frames: this.sprite.anims.generateFrameNumbers('player', { start: 6, end: 7 }),
+            frameRate: 5,
+            repeat: -1
+        });
+        this.sprite.anims.create({
+            key: 'left-hold',
+            frames: this.sprite.anims.generateFrameNumbers('player', { start: 8, end: 9 }),
+            frameRate: 5,
+            repeat: -1
+        });
+
         this.picked_up = null;
         this.diffuse_timer = null;
-        this.scene.physics.add.collider(sprite, scene.ground);
-        this.sprite.setGravityY(300);
+        
         this.left_key = scene.input.keyboard.addKey('A');
         this.right_key = scene.input.keyboard.addKey('D');
         this.up_key = scene.input.keyboard.addKey('W');
@@ -62,8 +106,9 @@ export class Player {
             this.picked_up = closest[0];
 
             this.picked_up.container.body.setGravityY(0);
+            this.picked_up.container.body.stop();
             this.picked_up.container.x = this.sprite.x;
-            this.picked_up.container.y = this.sprite.y - 20;
+            this.picked_up.container.y = this.sprite.y - this.sprite.height / 2 - this.picked_up.container.height / 2;
 
             this.diffuse_timer = this.scene.time.addEvent({
                 callback: this.diffuse,
@@ -109,14 +154,6 @@ export class Player {
 
     update()
     {
-        // Movement
-        this.sprite.x -= this.scene.input.keyboard.checkDown(this.left_key) ? this.move_speed : 0;
-        this.sprite.x += this.scene.input.keyboard.checkDown(this.right_key) ? this.move_speed : 0;
-        if (this.scene.input.keyboard.checkDown(this.up_key) && this.sprite.body.touching.down)
-        {
-            this.sprite.setVelocityY(-200);
-        }
-
         // Pickup
         if (this.scene.input.keyboard.checkDown(this.pickup_key))
         {
@@ -125,8 +162,8 @@ export class Player {
         if (this.picked_up != null)
         {
             this.picked_up.container.x = this.sprite.x;
-            this.picked_up.container.y = this.sprite.y - 20;
-        }
+            this.picked_up.container.y = this.sprite.y - this.sprite.height / 2 - this.picked_up.container.height / 2;
+        }    
 
         // Throw
         if (this.scene.input.activePointer.leftButtonDown())
@@ -135,6 +172,34 @@ export class Player {
         }
 
         // Diffuse
+
+        // Movement
+        if (this.scene.input.keyboard.checkDown(this.left_key)) {
+            this.sprite.setVelocityX(-this.move_speed);
+            if (this.picked_up == null) {
+                this.sprite.anims.play('left', true);
+            } else {
+                this.sprite.anims.play('left-hold', true);
+            }
+        } else if (this.scene.input.keyboard.checkDown(this.right_key)) {
+            this.sprite.setVelocityX(this.move_speed);
+            if (this.picked_up == null) {
+                this.sprite.anims.play('right', true);
+            } else {
+                this.sprite.anims.play('right-hold', true);
+            }
+        } else {
+            this.sprite.setVelocityX(0);
+            if (this.picked_up == null) {
+                this.sprite.anims.play('idle');
+            } else {
+                this.sprite.anims.play('idle-hold');
+            }
+        }
+        if (this.scene.input.keyboard.checkDown(this.up_key) && this.sprite.body.touching.down)
+        {
+            this.sprite.setVelocityY(-200);
+        }
     }
 
     hit() {

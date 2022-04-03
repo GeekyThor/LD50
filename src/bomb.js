@@ -39,7 +39,7 @@ export class Bomb {
             if (this.timer_time == 0) {
                 this.timer_event.loop = false;
 
-                this.explosion = this.scene.add.circle(this.container.x, this.container.y, this.boom_radius, 0xff8800);
+                this.explosion = this.scene.add.circle(this.container.x, this.container.y, this.boom_radius, 0xff8800, 0.5);
                 this.scene.time.addEvent({
                     callback: this.remove_explosion,
                     callbackScope: this,

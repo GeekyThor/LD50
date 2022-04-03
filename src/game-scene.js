@@ -7,13 +7,12 @@ const PLAYER_HEIGHT = 20;
 export class GameScene extends Phaser.Scene {
     constructor() {
         super('GameScene');
-        this.move_speed = 3;
     }
 
     preload() {
         this.load.image('bg', 'assets/bg.png');
         this.load.image('ground', 'assets/ground.png');
-        this.load.spritesheet('player', 'assets/player.png', { frameWidth: 21, frameHeight: 24 });
+        this.load.spritesheet('player', 'assets/player.png', { frameWidth: 21, frameHeight: 17 });
         this.load.spritesheet('small_bomb', 'assets/bombs/small.png', { frameWidth: 15, frameHeight: 20 });
     }
 
@@ -24,11 +23,7 @@ export class GameScene extends Phaser.Scene {
         this.ground.y -= this.ground.height / 2;
         this.ground.setImmovable();
 
-        var player_sprite = this.physics.add.sprite(
-            Consts.CANVAS_WIDTH / 2, 
-            Consts.CANVAS_HEIGHT - this.ground.height - PLAYER_HEIGHT / 2, 
-            'player');
-        this.player = new Player(this, player_sprite, 3, 5, 400, 2000);
+        this.player = new Player(this, 150, 5, 400, 2000);
 
         this.bombs = [];
 
@@ -36,7 +31,7 @@ export class GameScene extends Phaser.Scene {
             callback: this.spawn_bomb,
             callbackScope: this,
             delay: 100,
-            loop: true
+            loop: false
         });
     }
 
