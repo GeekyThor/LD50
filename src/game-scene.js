@@ -2,7 +2,7 @@ import { BombGameContext, BombGenerator } from './bomb-generator.js';
 
 const Consts = require('./consts.js');
 const { Player } = require('./player.js');
-const { SmallBomb, NukeBomb, Bomb } = require('./bomb.js');
+const { SmallBomb, SmallOnImpactBomb, NukeBomb } = require('./bomb.js');
 
 export class GameScene extends Phaser.Scene {
     constructor() {
@@ -10,8 +10,9 @@ export class GameScene extends Phaser.Scene {
 
         this.bomb_generator = new BombGenerator([
             new BombGameContext(null, 0, 9, 0),
-            new BombGameContext(SmallBomb, 0, 1, 0.01),
-            new BombGameContext(NukeBomb, 20, 0.01, 0.0001)
+            new BombGameContext(SmallOnImpactBomb, 0, 0.1, 0.05),
+            new BombGameContext(SmallBomb, 0, 0.05, 0.05),
+            new BombGameContext(NukeBomb, 20, 0.001, 0.001)
         ]);
         this.elapsed_time = 0.0;
     }
@@ -43,7 +44,7 @@ export class GameScene extends Phaser.Scene {
         this.bomb_spawn_event = this.time.addEvent({
             callback: this.spawn_bomb,
             callbackScope: this,
-            delay: 500,
+            delay: 50,
             loop: true
         });
     }
@@ -63,7 +64,7 @@ export class GameScene extends Phaser.Scene {
 
     spawn_bomb() {
         var bomb_class = this.bomb_generator.get_next(this.elapsed_time);
-        this.elapsed_time += 0.5;
+        this.elapsed_time += 0.05;
         if (bomb_class == null)
             return;
         var new_bomb = new bomb_class(this, Phaser.Math.Between(20, Consts.CANVAS_WIDTH - 20), -20);

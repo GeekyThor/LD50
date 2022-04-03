@@ -210,7 +210,7 @@ export class OnImpactBomb {
 export class SmallBomb extends TimedBomb {
     constructor(scene, x, y) {
         var bomb_width = 15;
-        super(scene, x, y, 'small_bomb', bomb_width, 0.5, 25, 5, 1, 5);
+        super(scene, x, y, 'small_bomb', bomb_width, 0.5, 25, 5, 2, 10);
         this.container.body.setCircle(bomb_width / 2, 0, bomb_width / 2);
         this.container.body.setCollideWorldBounds(true, 0.7, 0.7);
         this.container.body.setBounce(1);
@@ -219,8 +219,8 @@ export class SmallBomb extends TimedBomb {
 
 export class SmallOnImpactBomb extends OnImpactBomb {
     constructor(scene, x, y) {
-        var bomb_width = 5;
-        super(scene, x, y, 'small-bomb', bomb_width, 25, 1);
+        var bomb_width = 15;
+        super(scene, x, y, 'small_bomb', bomb_width, 25, 1);
         this.container.body.setCircle(bomb_width / 2, 0, bomb_width / 2);
         this.container.body.setCollideWorldBounds(true, 0.7, 0.7);
         this.container.body.setBounce(1);
