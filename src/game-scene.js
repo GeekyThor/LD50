@@ -2,15 +2,13 @@ const Consts = require('./consts.js');
 const { Player } = require('./player.js');
 const { SmallBomb } = require('./bomb.js');
 
-const PLAYER_HEIGHT = 20;
-
 export class GameScene extends Phaser.Scene {
     constructor() {
         super('GameScene');
     }
 
     preload() {
-        this.load.image('bg', 'assets/bg.png');
+        this.load.image('background', 'assets/background.png');
         this.load.image('ground', 'assets/ground.png');
         this.load.spritesheet('player', 'assets/player.png', { frameWidth: 21, frameHeight: 17 });
         this.load.image('player-handsup', 'assets/player-handsup.png');
@@ -18,13 +16,9 @@ export class GameScene extends Phaser.Scene {
     }
 
     create() {
-        this.add.image(Consts.CANVAS_WIDTH / 2, Consts.CANVAS_HEIGHT / 2, 'bg');
+        this.add.image(Consts.CANVAS_WIDTH / 2, Consts.CANVAS_HEIGHT / 2, 'background');
 
-        this.ground = this.physics.add.sprite(Consts.CANVAS_WIDTH / 2, Consts.CANVAS_HEIGHT, 'ground');
-        this.ground.y -= this.ground.height / 2;
-        this.ground.setImmovable();
-
-        this.physics.world.setBounds(0, 0, Consts.CANVAS_WIDTH, Consts.CANVAS_HEIGHT - this.ground.height);
+        this.physics.world.setBounds(0, 0, Consts.CANVAS_WIDTH, Consts.CANVAS_HEIGHT - Consts.GROUND_HEIGHT);
 
         this.player = new Player(this, 150, 5, 400, 2000);
 

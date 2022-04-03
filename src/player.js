@@ -18,7 +18,7 @@ export class Player {
 
         this.container = scene.add.container(
             Consts.CANVAS_WIDTH / 2,
-            Consts.CANVAS_HEIGHT - scene.ground.height - this.sprite.height / 2,
+            Consts.CANVAS_HEIGHT - Consts.GROUND_HEIGHT - this.sprite.height / 2,
             [ this.sprite, this.hands_up ]);
         this.container.setSize(this.sprite.width, this.sprite.height);
         this.scene.physics.world.enable(this.container);
