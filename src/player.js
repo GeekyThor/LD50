@@ -263,7 +263,6 @@ export class Player {
     hit() {
         if (this.hp > 0) {
             this.hp -= 1;
-            console.log("Remaining hp: ", this.hp);
             this.health_bar.update(this.hp / this.max_hp);
         }
         if (this.hp == 0) {
@@ -279,7 +278,6 @@ export class Player {
             bomb.container.body.setGravityY(0);
             bomb.container.body.stop();
         }
-        console.log(this.scene.scene)
         this.scene.scene.run("DeathScene");
         this.is_alive = false;
     }
