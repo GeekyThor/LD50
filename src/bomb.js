@@ -1,4 +1,4 @@
-export class Bomb {
+export class TimedBomb {
     constructor(scene, x, y, sprite_name, bomb_width, mass, boom_radius, time_to_boom, worth) {
         this.scene = scene;
         this.mass = mass;
@@ -206,7 +206,7 @@ export class OnImpactBomb {
     }
 }
 
-export class SmallBomb extends Bomb {
+export class SmallBomb extends TimedBomb {
     constructor(scene, x, y) {
         var bomb_width = 15;
         super(scene, x, y, 'small_bomb', bomb_width, 1, 25, 5, 1);
@@ -216,7 +216,17 @@ export class SmallBomb extends Bomb {
     }
 }
 
-export class NukeBomb extends Bomb {
+export class SmallOnImpactBomb extends OnImpactBomb {
+    constructor(scene, x, y) {
+        var bomb_width = 5;
+        super(scene, x, y, 'small-bomb', bomb_width, 25, 1);
+        this.container.body.setCircle(bomb_width / 2, 0, bomb_width / 2);
+        this.container.body.setCollideWorldBounds(true, 0.7, 0.7);
+        this.container.body.setBounce(1);
+    }
+}
+
+export class NukeBomb extends TimedBomb {
     constructor(scene, x, y) {
         super(scene, x, y, 'nuke_bomb', 30, 1000, 400, 10, 10);
         this.container.body.setCollideWorldBounds(true, 0, 0);
