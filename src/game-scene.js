@@ -76,7 +76,9 @@ export class GameScene extends Phaser.Scene {
     }
 
     increase_score(number) {
-        this.score += number;
-        this.score_text_2.setText(this.score);
+        if (this.player.is_alive) {
+            this.score += number;
+            this.score_text_2.setText(this.score);
+        }
     }
 }
