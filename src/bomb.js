@@ -75,7 +75,6 @@ export class Bomb {
         // Ground friction
         if (!this.boomed) {
             if (this.container.body.onFloor()) {
-                console.log('friction');
                 if (Math.abs(this.container.body.velocity.x) < 100) {
                     this.container.body.setVelocityX(0);
                 }
