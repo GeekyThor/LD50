@@ -1,10 +1,19 @@
+import { BombGameContext, BombGenerator } from './bomb-generator.js';
+
 const Consts = require('./consts.js');
 const { Player } = require('./player.js');
-const { SmallBomb } = require('./bomb.js');
+const { SmallBomb, NukeBomb, Bomb } = require('./bomb.js');
 
 export class GameScene extends Phaser.Scene {
     constructor() {
         super('GameScene');
+
+        this.bomb_generator = new BombGenerator([
+            new BombGameContext(null, 0, 9, 0),
+            new BombGameContext(SmallBomb, 0, 1, 0.01),
+            new BombGameContext(NukeBomb, 20, 0.01, 0.0001)
+        ]);
+        this.elapsed_time = 0.0;
     }
 
     preload() {
@@ -53,7 +62,11 @@ export class GameScene extends Phaser.Scene {
     }
 
     spawn_bomb() {
-        var new_bomb = new SmallBomb(this, Phaser.Math.Between(20, Consts.CANVAS_WIDTH - 20), -20);
+        var bomb_class = this.bomb_generator.get_next(this.elapsed_time);
+        this.elapsed_time += 0.5;
+        if (bomb_class == null)
+            return;
+        var new_bomb = new bomb_class(this, Phaser.Math.Between(20, Consts.CANVAS_WIDTH - 20), -20);
         for (var bomb of this.bombs) {
             new_bomb.add_collision_with_bomb(bomb);
             bomb.add_collision_with_bomb(new_bomb);
