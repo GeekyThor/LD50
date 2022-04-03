@@ -27,7 +27,7 @@ export class Player {
         this.scene.physics.add.collider(this.container, this.scene.ground);
         this.container.body.setCollideWorldBounds(true, 0, 0);
         this.container.body.setGravityY(300);
-        this.container.body.setMass(5);
+        this.container.body.setMass(3);
 
         this.sprite.anims.create({
             key: 'idle',
@@ -166,7 +166,7 @@ export class Player {
         if (this.picked_up != null) {
             if (this.picked_up.armed && !this.picked_up.boomed) {
                 this.picked_up.armed = false;
-                this.scene.increase_score(this.picked_up.worth);
+                this.scene.increase_score(this.picked_up.diffuse_worth);
                 if (this.picked_up.timer_time > 1) {
                     this.picked_up.bomb.anims.play('diffused');
                 } else {
