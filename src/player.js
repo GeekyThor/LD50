@@ -1,3 +1,6 @@
+import { ProgressBar } from "./progressbar";
+const Consts = require('./consts.js');
+
 export class Player {
 
     constructor(scene, sprite, move_speed, hp, throw_vel, diffuse_time)
@@ -6,8 +9,12 @@ export class Player {
         this.sprite = sprite;
         this.move_speed = move_speed;
         this.hp = hp;
+        this.max_hp = hp;
         this.throw_vel = throw_vel;
         this.diffuse_time = diffuse_time;
+
+        this.health_bar = new ProgressBar(scene, (Consts.CANVAS_WIDTH - 300) / 2, Consts.CANVAS_HEIGHT - 60, 300, 20, 0xff2d00, 0x222222);
+        this.health_bar.update(1);
         
         this.picked_up = null;
         this.diffuse_timer = null;
@@ -104,7 +111,7 @@ export class Player {
                 this.picked_up.armed = false;
                 console.log("Diffuse!");
             }
-        } 
+        }
     }
 
     update()
@@ -141,6 +148,7 @@ export class Player {
         if (this.hp > 0) {
             this.hp -= 1;
             console.log("Remaining hp: ", this.hp);
+            this.health_bar.update(this.hp / this.max_hp)
         }
         if (this.hp == 0) {
             console.log("Game over!");

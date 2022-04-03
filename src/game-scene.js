@@ -25,7 +25,7 @@ export class GameScene extends Phaser.Scene {
         this.ground.setImmovable();
 
         var player_sprite = this.physics.add.sprite(
-            Consts.CANVAS_WIDTH / 2, 
+            Consts.CANVAS_WIDTH / 2,
             Consts.CANVAS_HEIGHT - this.ground.height - PLAYER_HEIGHT / 2, 
             'player');
         this.player = new Player(this, player_sprite, 3, 5, 400, 2000);
