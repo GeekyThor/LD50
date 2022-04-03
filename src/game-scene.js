@@ -13,6 +13,7 @@ export class GameScene extends Phaser.Scene {
         this.load.image('bg', 'assets/bg.png');
         this.load.image('ground', 'assets/ground.png');
         this.load.spritesheet('player', 'assets/player.png', { frameWidth: 21, frameHeight: 17 });
+        this.load.image('player-handsup', 'assets/player-handsup.png');
         this.load.spritesheet('small_bomb', 'assets/bombs/small.png', { frameWidth: 15, frameHeight: 20 });
     }
 

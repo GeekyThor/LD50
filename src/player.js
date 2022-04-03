@@ -13,15 +13,17 @@ export class Player {
         this.health_bar = new ProgressBar(scene, (Consts.CANVAS_WIDTH - 300) / 2, Consts.CANVAS_HEIGHT - 60, 300, 20, 0xff2d00, 0x222222);
         this.health_bar.update(1);
         
-        this.sprite = this.scene.physics.add.sprite(
-            Consts.CANVAS_WIDTH / 2, 
-            Consts.CANVAS_HEIGHT - scene.ground.height, 
-            'player',
-            0);
-        this.sprite.y -= this.sprite.height / 2;
-        this.sprite.setGravityY(300);
-        this.scene.physics.world.enable(this.sprite);
-        this.scene.physics.add.collider(this.sprite, this.scene.ground);
+        this.sprite = this.scene.physics.add.sprite(0, 0, 'player', 0);
+        this.hands_up = this.scene.add.image(0, -this.sprite.height / 2, 'player-handsup', 0);
+
+        this.container = scene.add.container(
+            Consts.CANVAS_WIDTH / 2,
+            Consts.CANVAS_HEIGHT - scene.ground.height - this.sprite.height / 2,
+            [ this.sprite, this.hands_up ]);
+        this.container.setSize(this.sprite.width, this.sprite.height);
+        scene.physics.world.enable(this.container);
+        this.scene.physics.add.collider(this.container, this.scene.ground);
+        this.container.body.setGravityY(300);
 
         this.sprite.anims.create({
             key: 'idle',
@@ -74,7 +76,7 @@ export class Player {
         for (const bomb of this.scene.bombs) {
             // Prevents the player from trying to pick up an exploded bomb
             if (!bomb.boomed) {
-                var distance = Phaser.Math.Distance.Between(bomb.container.x, bomb.container.y, this.sprite.x, this.sprite.y);
+                var distance = Phaser.Math.Distance.Between(bomb.container.x, bomb.container.y, this.container.x, this.container.y);
                 
                 if (closest == null)
                 {
@@ -110,9 +112,9 @@ export class Player {
             this.picked_up = closest[0];
 
             this.picked_up.container.body.setGravityY(0);
-            this.picked_up.container.body.stop();
-            this.picked_up.container.x = this.sprite.x;
-            this.picked_up.container.y = this.sprite.y - this.sprite.height / 2 - this.picked_up.container.height / 2;
+            this.picked_up.container.body.setVelocity(this.container.body.velocity.x, this.container.body.velocity.y);
+            this.picked_up.container.x = this.container.x;
+            this.picked_up.container.y = this.container.y - this.sprite.height / 2 - this.picked_up.container.height / 2;
 
             this.diffuse_timer = this.scene.time.addEvent({
                 callback: this.diffuse,
@@ -134,7 +136,7 @@ export class Player {
             return;
         }
         
-        var throw_angle = -Phaser.Math.Angle.Between(this.sprite.x, this.sprite.y, this.scene.input.activePointer.x, this.scene.input.activePointer.y) + Math.PI / 2;
+        var throw_angle = -Phaser.Math.Angle.Between(this.container.x, this.container.y, this.scene.input.activePointer.x, this.scene.input.activePointer.y) + Math.PI / 2;
         this.picked_up.container.body.setVelocity(
             Math.sin(throw_angle) * this.throw_vel,
             Math.cos(throw_angle) * this.throw_vel
@@ -165,8 +167,13 @@ export class Player {
         }
         if (this.picked_up != null)
         {
-            this.picked_up.container.x = this.sprite.x;
-            this.picked_up.container.y = this.sprite.y - this.sprite.height / 2 - this.picked_up.container.height / 2;
+            if (this.picked_up.boomed) {
+                this.picked_up = null;
+            } else {    
+                this.picked_up.container.body.setVelocity(this.container.body.velocity.x, this.container.body.velocity.y);
+                this.picked_up.container.x = this.container.x;
+                this.picked_up.container.y = this.container.y - this.sprite.height / 2 - this.picked_up.container.height / 2;
+            }
         }    
 
         // Throw
@@ -179,30 +186,37 @@ export class Player {
 
         // Movement
         if (this.scene.input.keyboard.checkDown(this.left_key)) {
-            this.sprite.setVelocityX(-this.move_speed);
+            this.container.body.setVelocityX(-this.move_speed);
             if (this.picked_up == null) {
                 this.sprite.anims.play('left', true);
+                this.hands_up.setAlpha(0);
             } else {
                 this.sprite.anims.play('left-hold', true);
+                this.hands_up.setAlpha(1);
+
             }
         } else if (this.scene.input.keyboard.checkDown(this.right_key)) {
-            this.sprite.setVelocityX(this.move_speed);
+            this.container.body.setVelocityX(this.move_speed);
             if (this.picked_up == null) {
                 this.sprite.anims.play('right', true);
+                this.hands_up.setAlpha(0);
             } else {
                 this.sprite.anims.play('right-hold', true);
+                this.hands_up.setAlpha(1);
             }
         } else {
-            this.sprite.setVelocityX(0);
+            this.container.body.setVelocityX(0);
             if (this.picked_up == null) {
                 this.sprite.anims.play('idle');
+                this.hands_up.setAlpha(0);
             } else {
                 this.sprite.anims.play('idle-hold');
+                this.hands_up.setAlpha(1);
             }
         }
-        if (this.scene.input.keyboard.checkDown(this.up_key) && this.sprite.body.touching.down)
+        if (this.scene.input.keyboard.checkDown(this.up_key) && this.container.body.touching.down)
         {
-            this.sprite.setVelocityY(-200);
+            this.container.body.setVelocityY(-200);
         }
     }
 
