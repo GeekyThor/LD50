@@ -11,8 +11,9 @@ export class Player {
         this.diffuse_time = diffuse_time;
         this.is_alive = true;
 
-        this.health_bar = new ProgressBar(scene, (Consts.CANVAS_WIDTH - 300) / 2, Consts.CANVAS_HEIGHT - 60, 300, 20, 0xff2d00, 0x222222);
+        this.health_bar = new ProgressBar(scene, 10, 10, 300, 20, 3, 0xff2d00, 0x222222);
         this.health_bar.update(1);
+        this.diffuse_bar = null;
         
         this.sprite = this.scene.physics.add.sprite(0, 0, 'player', 0);
         this.hands_up = this.scene.add.image(0, -this.sprite.height / 2, 'player-handsup', 0);
@@ -24,8 +25,9 @@ export class Player {
         this.container.setSize(this.sprite.width, this.sprite.height);
         this.scene.physics.world.enable(this.container);
         this.scene.physics.add.collider(this.container, this.scene.ground);
-        this.container.body.setCollideWorldBounds(true, 0, 0.3);
+        this.container.body.setCollideWorldBounds(true, 0, 0);
         this.container.body.setGravityY(300);
+        this.container.body.setMass(5);
 
         this.sprite.anims.create({
             key: 'idle',
@@ -79,7 +81,7 @@ export class Player {
         for (const bomb of this.scene.bombs) {
             // Prevents the player from trying to pick up an exploded bomb
             if (!bomb.boomed) {
-                var distance = Phaser.Math.Distance.Between(bomb.container.x, bomb.container.y, this.container.x, this.container.y);
+                var distance = Phaser.Math.Distance.Between(bomb.container.x, bomb.container.y, this.container.x, this.container.y) - this.container.width / 2 - bomb.container.width / 2;
                 
                 if (closest == null)
                 {
@@ -118,13 +120,15 @@ export class Player {
             this.picked_up.container.body.setVelocity(this.container.body.velocity.x, this.container.body.velocity.y);
             this.picked_up.container.x = this.container.x;
             this.picked_up.container.y = this.container.y - this.sprite.height / 2 - this.picked_up.container.height / 2;
-
+            if (!this.picked_up.armed)
+                return;
             this.diffuse_timer = this.scene.time.addEvent({
                 callback: this.diffuse,
                 callbackScope: this,
                 delay: this.diffuse_time,
                 loop: false
             });;
+            this.diffuse_bar = new ProgressBar(this.scene, this.container.x, this.container.y, Consts.PLAYER_WIDTH + 10, 10, 0.8, 0x40d300, 0x222222);
         }
     }
 
@@ -139,16 +143,22 @@ export class Player {
             return;
         }
         
-        var throw_angle = -Phaser.Math.Angle.Between(this.container.x, this.container.y, this.scene.input.activePointer.x, this.scene.input.activePointer.y) + Math.PI / 2;
+        var throw_angle = Phaser.Math.Angle.Between(this.container.x, this.container.y, this.scene.input.activePointer.x, this.scene.input.activePointer.y);
+        var throw_vel = this.throw_vel / (1 + this.picked_up.mass);
         this.picked_up.container.body.setVelocity(
-            Math.sin(throw_angle) * this.throw_vel,
-            Math.cos(throw_angle) * this.throw_vel
+            Math.cos(throw_angle) * throw_vel,
+            Math.sin(throw_angle) * throw_vel
         )
         this.picked_up.container.body.setGravityY(300);
 
-        this.picked_up = null;
         if (this.diffuse_timer != null)
             this.diffuse_timer.remove();
+        if (this.diffuse_bar != null)
+        {
+            this.diffuse_bar.destroy();
+            this.diffuse_bar = null;
+        }
+        this.picked_up = null;
     }
 
     diffuse()
@@ -156,9 +166,20 @@ export class Player {
         if (this.picked_up != null) {
             if (this.picked_up.armed && !this.picked_up.boomed) {
                 this.picked_up.armed = false;
-                console.log("Diffuse!");
+                this.scene.increase_score(this.picked_up.worth);
+                if (this.picked_up.timer_time > 1) {
+                    this.picked_up.bomb.anims.play('diffused');
+                } else {
+                    this.picked_up.bomb.anims.play('diffused-short');
+                }
             }
         }
+    }
+
+    update_diffuse_bar_pos()
+    {
+        this.diffuse_bar.x = this.container.x - Consts.PLAYER_WIDTH / 2 - 5;
+        this.diffuse_bar.y = this.container.y - Consts.PLAYER_HEIGHT - 23;
     }
 
     update()
@@ -171,13 +192,15 @@ export class Player {
         if (this.picked_up != null)
         {
             if (this.picked_up.boomed) {
+                this.diffuse_bar.destroy();
+                this.diffuse_bar = null;
                 this.picked_up = null;
-            } else {    
+            } else {
                 this.picked_up.container.body.setVelocity(this.container.body.velocity.x, this.container.body.velocity.y);
                 this.picked_up.container.x = this.container.x;
                 this.picked_up.container.y = this.container.y - this.sprite.height / 2 - this.picked_up.container.height / 2;
             }
-        }    
+        }
 
         // Throw
         if (this.scene.input.activePointer.leftButtonDown())
@@ -185,27 +208,26 @@ export class Player {
             this.handle_throw();
         }
 
-        // Diffuse
-
         // Movement
         if (this.scene.input.keyboard.checkDown(this.left_key)) {
-            this.container.body.setVelocityX(-this.move_speed);
-            if (this.picked_up == null) {
-                this.sprite.anims.play('left', true);
-                this.hands_up.setAlpha(0);
-            } else {
+            if (this.picked_up != null) {
+                this.container.body.setVelocityX(-this.move_speed / (1 + this.picked_up.mass));
                 this.sprite.anims.play('left-hold', true);
                 this.hands_up.setAlpha(1);
-
+            } else {
+                this.container.body.setVelocityX(-this.move_speed);
+                this.sprite.anims.play('left', true);
+                this.hands_up.setAlpha(0);
             }
         } else if (this.scene.input.keyboard.checkDown(this.right_key)) {
-            this.container.body.setVelocityX(this.move_speed);
-            if (this.picked_up == null) {
-                this.sprite.anims.play('right', true);
-                this.hands_up.setAlpha(0);
-            } else {
+            if (this.picked_up != null) {
+                this.container.body.setVelocityX(this.move_speed / (1 + this.picked_up.mass));
                 this.sprite.anims.play('right-hold', true);
                 this.hands_up.setAlpha(1);
+            } else {
+                this.container.body.setVelocityX(this.move_speed);
+                this.sprite.anims.play('right', true);
+                this.hands_up.setAlpha(0);
             }
         } else {
             this.container.body.setVelocityX(0);
@@ -219,7 +241,18 @@ export class Player {
         }
         if (this.scene.input.keyboard.checkDown(this.up_key) && this.container.body.onFloor())
         {
-            this.container.body.setVelocityY(-200);
+            if (this.picked_up != null) {
+                this.container.body.setVelocityY(-200 / (1 + this.picked_up.mass));
+            } else {
+                this.container.body.setVelocityY(-200);
+            }
+        }
+
+        // Diffuse
+        if (this.diffuse_bar != null)
+        {
+            this.update_diffuse_bar_pos()
+            this.diffuse_bar.update(this.diffuse_timer.getOverallProgress());
         }
 
         if (this.scene.input.keyboard.checkDown(this.die_key)) {
@@ -231,7 +264,7 @@ export class Player {
         if (this.hp > 0) {
             this.hp -= 1;
             console.log("Remaining hp: ", this.hp);
-            this.health_bar.update(this.hp / this.max_hp)
+            this.health_bar.update(this.hp / this.max_hp);
         }
         if (this.hp == 0) {
             this.gameOver();
