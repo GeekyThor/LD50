@@ -147,7 +147,6 @@ export class Player {
         )
         this.picked_up.container.body.setGravityY(300);
 
-        this.picked_up = null;
         if (this.diffuse_timer != null)
             this.diffuse_timer.remove();
         if (this.diffuse_bar != null)
@@ -155,6 +154,7 @@ export class Player {
             this.diffuse_bar.destroy();
             this.diffuse_bar = null;
         }
+        this.picked_up = null;
     }
 
     diffuse()
@@ -188,7 +188,6 @@ export class Player {
         if (this.picked_up != null)
         {
             if (this.picked_up.boomed) {
-                this.picked_up = null;
                 this.diffuse_bar.destroy();
                 this.diffuse_bar = null;
                 this.picked_up = null;
