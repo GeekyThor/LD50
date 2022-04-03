@@ -26,6 +26,7 @@ export class Player {
         this.scene.physics.add.collider(this.container, this.scene.ground);
         this.container.body.setCollideWorldBounds(true, 0, 0);
         this.container.body.setGravityY(300);
+        this.container.body.setMass(5);
 
         this.sprite.anims.create({
             key: 'idle',
