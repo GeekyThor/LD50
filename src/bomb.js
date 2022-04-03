@@ -133,8 +133,93 @@ export class Bomb {
     }
 }
 
+export class OnImpactBomb {
+    constructor(scene, x, y, sprite_name, boom_radius, worth) {
+        this.scene = scene;
+        this.boom_radius = boom_radius;
+        this.worth = worth;
+        
+        this.bomb = scene.add.sprite(0, 0, sprite_name, 0);
+        this.bomb.scale = bomb_width / this.bomb.width;
+        
+        this.bomb.anims.create({
+            key: 'flashing',
+            frames: this.bomb.anims.generateFrameNumbers(sprite_name, { start: 0, end: 1 }),
+            frameRate: 4,
+            repeat: -1
+        });
+        this.bomb.anims.play('normal');
+
+        this.container = scene.add.container(x, y, [ this.bomb ]);
+        this.container.setSize(this.bomb.width, this.bomb.height);
+        scene.physics.world.enable(this.container);
+
+        this.container.body.setCircle(7, 0, 7);
+        this.container.body.setBounce(1);
+        this.container.body.setGravityY(300);
+        this.container.body.setMaxVelocityY(300);
+        this.container.body.setCollideWorldBounds(true, 0.7, 0.7);
+
+        // Destroy colliders with ground and other bombs after bomb explodes
+        this.colliders = [scene.physics.add.collider(this.container, scene.ground)];
+
+        this.armed = true;
+        this.boomed = false;
+    }
+
+    explode_bomb() {
+        this.timer_event.loop = false;
+
+        this.explosion = this.scene.add.circle(this.container.x, this.container.y, this.boom_radius, 0xff8800, 0.5);
+        this.scene.time.addEvent({
+            callback: this.remove_explosion,
+            callbackScope: this,
+            delay: 200,
+            loop: false
+        });
+
+        if (Phaser.Geom.Intersects.CircleToRectangle(
+            new Phaser.Geom.Circle(this.container.x, this.container.y, this.boom_radius),
+            this.scene.player.sprite.getBounds()
+        )) {
+            this.scene.player.hit();
+        } else {
+            this.scene.increase_score(this.worth);
+        }
+        
+        this.boomed = true;
+        for (var collider of this.colliders) {
+            if (collider.world != null) {
+                collider.destroy();
+            }
+        }
+        this.container.destroy();
+    }
+
+    remove_explosion() {
+        this.explosion.destroy();
+    }
+
+    update() {
+        // Ground friction
+        if (!this.boomed) {
+            if (this.container.body.onFloor()) {
+                this.explode_bomb()
+            }
+        }
+    }
+}
+
 export class SmallBomb extends Bomb {
     constructor(scene, x, y) {
         super(scene, x, y, 'small_bomb', 15, 25, 5, 1);
     }
 }
+
+export class NukeBomb extends Bomb {
+    constructor(scene, x, y) {
+        super(scene, x, y, 'nuke_bomb', 15, 400, 10, 10);
+    }
+}
+
+
