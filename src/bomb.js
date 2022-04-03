@@ -17,7 +17,7 @@ export class Bomb {
         this.container.body.setBounce(1);
         this.container.body.setGravityY(300);
         this.container.body.setMaxVelocityY(300);
-        this.container.body.collideWorldBounds = true;
+        this.container.body.setCollideWorldBounds(true, 0.7, 0.7);
 
         // Destroy colliders with ground and other bombs after bomb explodes
         this.colliders = [scene.physics.add.collider(this.container, scene.ground)];
@@ -74,14 +74,12 @@ export class Bomb {
     update() {
         // Ground friction
         if (!this.boomed) {
-            if (Phaser.Geom.Intersects.RectangleToRectangle(
-                this.container.getBounds(),
-                this.scene.ground.getBounds()
-            )) {
+            if (this.container.body.onFloor()) {
+                console.log('friction');
                 if (Math.abs(this.container.body.velocity.x) < 100) {
                     this.container.body.setVelocityX(0);
                 }
-                this.container.body.setAccelerationX(-1000 * Math.sign(this.container.body.velocity.x)); 
+                this.container.body.setAccelerationX(-2000 * Math.sign(this.container.body.velocity.x)); 
             } else {
                 this.container.body.setAccelerationX(0);
             }

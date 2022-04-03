@@ -21,8 +21,9 @@ export class Player {
             Consts.CANVAS_HEIGHT - scene.ground.height - this.sprite.height / 2,
             [ this.sprite, this.hands_up ]);
         this.container.setSize(this.sprite.width, this.sprite.height);
-        scene.physics.world.enable(this.container);
+        this.scene.physics.world.enable(this.container);
         this.scene.physics.add.collider(this.container, this.scene.ground);
+        this.container.body.setCollideWorldBounds(true, 0, 0.3);
         this.container.body.setGravityY(300);
 
         this.sprite.anims.create({
@@ -214,7 +215,7 @@ export class Player {
                 this.hands_up.setAlpha(1);
             }
         }
-        if (this.scene.input.keyboard.checkDown(this.up_key) && this.container.body.touching.down)
+        if (this.scene.input.keyboard.checkDown(this.up_key) && this.container.body.onFloor())
         {
             this.container.body.setVelocityY(-200);
         }

@@ -24,6 +24,8 @@ export class GameScene extends Phaser.Scene {
         this.ground.y -= this.ground.height / 2;
         this.ground.setImmovable();
 
+        this.physics.world.setBounds(0, 0, Consts.CANVAS_WIDTH, Consts.CANVAS_HEIGHT - this.ground.height);
+
         this.player = new Player(this, 150, 5, 400, 2000);
 
         this.bombs = [];
@@ -31,7 +33,7 @@ export class GameScene extends Phaser.Scene {
         this.bomb_spawn_event = this.time.addEvent({
             callback: this.spawn_bomb,
             callbackScope: this,
-            delay: 100,
+            delay: 500,
             loop: true
         });
     }
