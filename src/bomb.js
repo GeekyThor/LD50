@@ -1,6 +1,7 @@
 export class Bomb {
-    constructor(scene, x, y, sprite_name, bomb_width, boom_radius, time_to_boom, worth) {
+    constructor(scene, x, y, sprite_name, bomb_width, mass, boom_radius, time_to_boom, worth) {
         this.scene = scene;
+        this.mass = mass;
         this.boom_radius = boom_radius;
         this.worth = worth;
         
@@ -37,14 +38,11 @@ export class Bomb {
         this.container.setSize(this.bomb.width, this.bomb.height);
         scene.physics.world.enable(this.container);
 
-        this.container.body.setCircle(7, 0, 7);
-        this.container.body.setBounce(1);
         this.container.body.setGravityY(300);
         this.container.body.setMaxVelocityY(300);
-        this.container.body.setCollideWorldBounds(true, 0.7, 0.7);
 
-        // Destroy colliders with ground and other bombs after bomb explodes
-        this.colliders = [scene.physics.add.collider(this.container, scene.ground)];
+        // Destroy colliders with player and other bombs after bomb explodes
+        this.colliders = [this.scene.physics.add.collider(this.container, this.scene.player.container)];
 
         this.armed = true;
         this.boomed = false;
@@ -131,10 +129,14 @@ export class Bomb {
             }
         }
     }
+
+    add_collision_with_bomb(bomb) {
+        this.colliders.push(this.scene.physics.add.collider(this.container, bomb.container));
+    }
 }
 
 export class OnImpactBomb {
-    constructor(scene, x, y, sprite_name, boom_radius, worth) {
+    constructor(scene, x, y, sprite_name, bomb_width, boom_radius, worth) {
         this.scene = scene;
         this.boom_radius = boom_radius;
         this.worth = worth;
@@ -142,34 +144,24 @@ export class OnImpactBomb {
         this.bomb = scene.add.sprite(0, 0, sprite_name, 0);
         this.bomb.scale = bomb_width / this.bomb.width;
         
-        this.bomb.anims.create({
-            key: 'flashing',
-            frames: this.bomb.anims.generateFrameNumbers(sprite_name, { start: 0, end: 1 }),
-            frameRate: 4,
-            repeat: -1
-        });
-        this.bomb.anims.play('normal');
-
         this.container = scene.add.container(x, y, [ this.bomb ]);
         this.container.setSize(this.bomb.width, this.bomb.height);
         scene.physics.world.enable(this.container);
 
-        this.container.body.setCircle(7, 0, 7);
+        this.container.body.setCircle(bomb_width / 2, 0, bomb_width / 2);
         this.container.body.setBounce(1);
         this.container.body.setGravityY(300);
         this.container.body.setMaxVelocityY(300);
         this.container.body.setCollideWorldBounds(true, 0.7, 0.7);
 
-        // Destroy colliders with ground and other bombs after bomb explodes
-        this.colliders = [scene.physics.add.collider(this.container, scene.ground)];
+        // Destroy colliders with player and other bombs after bomb explodes
+        this.colliders = [this.scene.physics.add.collider(this.container, this.scene.player.container, this.explode_bomb, null, this)];
 
         this.armed = true;
         this.boomed = false;
     }
 
     explode_bomb() {
-        this.timer_event.loop = false;
-
         this.explosion = this.scene.add.circle(this.container.x, this.container.y, this.boom_radius, 0xff8800, 0.5);
         this.scene.time.addEvent({
             callback: this.remove_explosion,
@@ -204,21 +196,32 @@ export class OnImpactBomb {
         // Ground friction
         if (!this.boomed) {
             if (this.container.body.onFloor()) {
-                this.explode_bomb()
+                this.explode_bomb();
             }
         }
+    }
+
+    add_collision_with_bomb(bomb) {
+        this.colliders.push(this.scene.physics.add.collider(this.container, bomb.container, this.explode_bomb, null, this));
     }
 }
 
 export class SmallBomb extends Bomb {
     constructor(scene, x, y) {
-        super(scene, x, y, 'small_bomb', 15, 25, 5, 1);
+        var bomb_width = 15;
+        super(scene, x, y, 'small_bomb', bomb_width, 1, 25, 5, 1);
+        this.container.body.setCircle(bomb_width / 2, 0, bomb_width / 2);
+        this.container.body.setCollideWorldBounds(true, 0.7, 0.7);
+        this.container.body.setBounce(1);
     }
 }
 
 export class NukeBomb extends Bomb {
     constructor(scene, x, y) {
-        super(scene, x, y, 'nuke_bomb', 15, 400, 10, 10);
+        super(scene, x, y, 'nuke_bomb', 30, 1000, 400, 10, 10);
+        this.container.body.setCollideWorldBounds(true, 0, 0);
+        this.container.body.setBounce(0);
+        this.container.body.pushable = false;
     }
 }
 

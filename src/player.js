@@ -79,7 +79,7 @@ export class Player {
         for (const bomb of this.scene.bombs) {
             // Prevents the player from trying to pick up an exploded bomb
             if (!bomb.boomed) {
-                var distance = Phaser.Math.Distance.Between(bomb.container.x, bomb.container.y, this.container.x, this.container.y);
+                var distance = Phaser.Math.Distance.Between(bomb.container.x, bomb.container.y, this.container.x, this.container.y) - this.container.width / 2 - bomb.container.width / 2;
                 
                 if (closest == null)
                 {
@@ -110,7 +110,7 @@ export class Player {
         }
         
         var closest = this.get_closest_bomb();
-        if (closest[1] != null && closest[1] <= 30)
+        if (closest[1] != null && closest[1] <= 10)
         {
             this.picked_up = closest[0];
 
@@ -142,9 +142,10 @@ export class Player {
         }
         
         var throw_angle = -Phaser.Math.Angle.Between(this.container.x, this.container.y, this.scene.input.activePointer.x, this.scene.input.activePointer.y) + Math.PI / 2;
+        var throw_vel = this.throw_vel / (1 + this.picked_up.mass);
         this.picked_up.container.body.setVelocity(
-            Math.sin(throw_angle) * this.throw_vel,
-            Math.cos(throw_angle) * this.throw_vel
+            Math.sin(throw_angle) * throw_vel,
+            Math.cos(throw_angle) * throw_vel
         )
         this.picked_up.container.body.setGravityY(300);
 
@@ -207,23 +208,24 @@ export class Player {
 
         // Movement
         if (this.scene.input.keyboard.checkDown(this.left_key)) {
-            this.container.body.setVelocityX(-this.move_speed);
-            if (this.picked_up == null) {
-                this.sprite.anims.play('left', true);
-                this.hands_up.setAlpha(0);
-            } else {
+            if (this.picked_up != null) {
+                this.container.body.setVelocityX(-this.move_speed / (1 + this.picked_up.mass));
                 this.sprite.anims.play('left-hold', true);
                 this.hands_up.setAlpha(1);
-
+            } else {
+                this.container.body.setVelocityX(-this.move_speed);
+                this.sprite.anims.play('left', true);
+                this.hands_up.setAlpha(0);
             }
         } else if (this.scene.input.keyboard.checkDown(this.right_key)) {
-            this.container.body.setVelocityX(this.move_speed);
-            if (this.picked_up == null) {
-                this.sprite.anims.play('right', true);
-                this.hands_up.setAlpha(0);
-            } else {
+            if (this.picked_up != null) {
+                this.container.body.setVelocityX(this.move_speed / (1 + this.picked_up.mass));
                 this.sprite.anims.play('right-hold', true);
                 this.hands_up.setAlpha(1);
+            } else {
+                this.container.body.setVelocityX(this.move_speed);
+                this.sprite.anims.play('right', true);
+                this.hands_up.setAlpha(0);
             }
         } else {
             this.container.body.setVelocityX(0);
@@ -237,7 +239,11 @@ export class Player {
         }
         if (this.scene.input.keyboard.checkDown(this.up_key) && this.container.body.onFloor())
         {
-            this.container.body.setVelocityY(-200);
+            if (this.picked_up != null) {
+                this.container.body.setVelocityY(-200 / (1 + this.picked_up.mass));
+            } else {
+                this.container.body.setVelocityY(-200);
+            }
         }
 
         // Diffuse
