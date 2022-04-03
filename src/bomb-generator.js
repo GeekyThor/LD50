@@ -16,10 +16,24 @@ export class BombGenerator {
         this.active_contexts = []
     }
 
+    rand_by_dist(dist)
+    {
+        const sum = dist.reduce((sum, a) => sum + a, 0);
+        const choice = Math.random() * sum;
+        var until_now = 0;
+        for (var i = 0; i < dist.length; i++)
+        {
+            until_now += dist[i];
+            if (choice < until_now)
+                return i;
+        }
+        return dist.length - 1;
+    }
+
     get_next(current_time)
     {
         // Wake up relevant contexts
-        for (const i in this.inactive_contexts)
+        for (var i = 0; i < this.inactive_contexts.length - 1; i++)
         {
             if (current_time > this.inactive_contexts[i].start_time)
             {
@@ -30,11 +44,12 @@ export class BombGenerator {
 
         // Calculate the probability for each bomb
         var dist_list = [];
-        for (const bomb_context of this.active_contexts)
+        for (var i = 0; i < this.active_contexts.length - 1; i++)
         {
             dist_list.push(bomb_context.start_probablility + (current_time - bomb_context.start_probablility) * bomb_context.probability_increment)
         }
 
-        // TODO: Somehow select a bomb from the list based on the probability distribution.
+        // Select a bomb from the list based on the probability distribution.
+        return this.active_contexts[this.rand_by_dist(dist_list)].bomb;
     }
 }
