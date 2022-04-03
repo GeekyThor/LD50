@@ -18,7 +18,9 @@ export class Bomb {
         this.container.body.setGravityY(300);
         this.container.body.setMaxVelocityY(300);
         this.container.body.collideWorldBounds = true;
-        scene.physics.add.collider(this.container, scene.ground);
+
+        // Destroy colliders with ground and other bombs after bomb explodes
+        this.colliders = [scene.physics.add.collider(this.container, scene.ground)];
 
         this.armed = true;
         this.boomed = false;
@@ -53,6 +55,12 @@ export class Bomb {
                 }
                 
                 this.boomed = true;
+                for (var collider of this.colliders) {
+                    if (collider.world != null) {
+                        console.log(collider.world.colliders);
+                        collider.destroy();
+                    }
+                }
                 this.container.destroy();
             } else {
                 this.timer_text.text = String(this.timer_time);

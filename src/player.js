@@ -63,7 +63,7 @@ export class Player {
 
             this.picked_up.container.body.setGravityY(0);
             this.picked_up.container.x = this.sprite.x;
-            this.picked_up.container.y = this.sprite.y;
+            this.picked_up.container.y = this.sprite.y - 20;
 
             this.diffuse_timer = this.scene.time.addEvent({
                 callback: this.diffuse,
@@ -125,7 +125,7 @@ export class Player {
         if (this.picked_up != null)
         {
             this.picked_up.container.x = this.sprite.x;
-            this.picked_up.container.y = this.sprite.y;
+            this.picked_up.container.y = this.sprite.y - 20;
         }
 
         // Throw
