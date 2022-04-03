@@ -10,7 +10,7 @@ export class Player {
         this.throw_vel = throw_vel;
         this.diffuse_time = diffuse_time;
 
-        this.health_bar = new ProgressBar(scene, 10, 10, 300, 20, 0xff2d00, 0x222222);
+        this.health_bar = new ProgressBar(scene, 10, 10, 300, 20, 3, 0xff2d00, 0x222222);
         this.health_bar.update(1);
         this.diffuse_bar = null;
         
@@ -125,7 +125,7 @@ export class Player {
                 delay: this.diffuse_time,
                 loop: false
             });;
-            this.diffuse_bar = new ProgressBar(this.scene, this.container.x, this.container.y, Consts.PLAYER_WIDTH + 10, 10, 0x40d300, 0x222222);
+            this.diffuse_bar = new ProgressBar(this.scene, this.container.x, this.container.y, Consts.PLAYER_WIDTH + 10, 10, 0.8, 0x40d300, 0x222222);
         }
     }
 
@@ -252,7 +252,7 @@ export class Player {
         if (this.hp > 0) {
             this.hp -= 1;
             console.log("Remaining hp: ", this.hp);
-            this.health_bar.update(this.hp / this.max_hp)
+            this.health_bar.update(this.hp / this.max_hp);
         }
         if (this.hp == 0) {
             console.log("Game over!");
