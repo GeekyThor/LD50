@@ -6,14 +6,14 @@ export class Bomb {
         this.bomb = scene.add.sprite(0, 0, sprite_name, 0);
         this.bomb.scale = bomb_width / this.bomb.width;
         this.bomb.anims.create({
-            key: 'ticking',
+            key: 'flashing',
             frames: this.bomb.anims.generateFrameNumbers(sprite_name, { start: 1, end: 2 }),
             frameRate: 4,
             repeat: -1
         });
 
         this.timer_time = time_to_boom;
-        this.timer_text = scene.add.text(-5, -4, String(this.timer_time));
+        this.timer_text = scene.add.text(-5, -4, String(Math.ceil(this.timer_time)));
 
         this.container = scene.add.container(x, y, [ this.bomb, this.timer_text ]);
         this.container.setSize(this.bomb.width, this.bomb.height);
@@ -31,12 +31,20 @@ export class Bomb {
         this.armed = true;
         this.boomed = false;
 
+        if (this.timer_time == 1) {
+            this.start_bomb_flashing();
+        }
+
         this.timer_event = scene.time.addEvent({
             callback: this.bomb_tick,
             callbackScope: this,
             delay: 1000,
             loop: true
         });
+
+        if (this.timer_time <= 0) {
+            this.explode_bomb();
+        }
     }
 
     bomb_tick() { 
@@ -44,38 +52,46 @@ export class Bomb {
             this.timer_time -= 1;
 
             if (this.timer_time == 1) {
-                this.bomb.anims.play('ticking', true);
+                this.start_bomb_flashing();
             }
 
-            if (this.timer_time == 0) {
-                this.timer_event.loop = false;
-
-                this.explosion = this.scene.add.circle(this.container.x, this.container.y, this.boom_radius, 0xff8800, 0.5);
-                this.scene.time.addEvent({
-                    callback: this.remove_explosion,
-                    callbackScope: this,
-                    delay: 200,
-                    loop: false
-                });
-
-                if (Phaser.Geom.Intersects.CircleToRectangle(
-                    new Phaser.Geom.Circle(this.container.x, this.container.y, this.boom_radius),
-                    this.scene.player.sprite.getBounds()
-                )) {
-                    this.scene.player.hit();
-                }
-                
-                this.boomed = true;
-                for (var collider of this.colliders) {
-                    if (collider.world != null) {
-                        collider.destroy();
-                    }
-                }
-                this.container.destroy();
+            if (this.timer_time <= 0) {
+                this.explode_bomb();
             } else {
-                this.timer_text.text = String(this.timer_time);
+                this.timer_text.text = String(Math.ceil(this.timer_time));
             }
         }
+    }
+
+    start_bomb_flashing() {
+        this.bomb.anims.play('flashing', true);
+    }
+
+    explode_bomb() {
+        this.timer_event.loop = false;
+
+        this.explosion = this.scene.add.circle(this.container.x, this.container.y, this.boom_radius, 0xff8800, 0.5);
+        this.scene.time.addEvent({
+            callback: this.remove_explosion,
+            callbackScope: this,
+            delay: 200,
+            loop: false
+        });
+
+        if (Phaser.Geom.Intersects.CircleToRectangle(
+            new Phaser.Geom.Circle(this.container.x, this.container.y, this.boom_radius),
+            this.scene.player.sprite.getBounds()
+        )) {
+            this.scene.player.hit();
+        }
+        
+        this.boomed = true;
+        for (var collider of this.colliders) {
+            if (collider.world != null) {
+                collider.destroy();
+            }
+        }
+        this.container.destroy();
     }
 
     remove_explosion() {
