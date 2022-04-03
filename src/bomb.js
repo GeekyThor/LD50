@@ -3,14 +3,20 @@ export class Bomb {
         this.scene = scene;
         this.boom_radius = boom_radius;
         
-        var bomb = scene.add.image(0, 0, sprite_name);
-        bomb.scale = bomb_width / bomb.width;
+        this.bomb = scene.add.sprite(0, 0, sprite_name, 0);
+        this.bomb.scale = bomb_width / this.bomb.width;
+        this.bomb.anims.create({
+            key: 'ticking',
+            frames: this.bomb.anims.generateFrameNumbers(sprite_name, { start: 1, end: 2 }),
+            frameRate: 4,
+            repeat: -1
+        });
 
         this.timer_time = time_to_boom;
         this.timer_text = scene.add.text(-5, -4, String(this.timer_time));
 
-        this.container = scene.add.container(x, y, [ bomb, this.timer_text ]);
-        this.container.setSize(bomb.width, bomb.height);
+        this.container = scene.add.container(x, y, [ this.bomb, this.timer_text ]);
+        this.container.setSize(this.bomb.width, this.bomb.height);
         scene.physics.world.enable(this.container);
 
         this.container.body.setCircle(7, 0, 7);
@@ -36,6 +42,11 @@ export class Bomb {
     bomb_tick() { 
         if (this.armed && !this.boomed) {
             this.timer_time -= 1;
+
+            if (this.timer_time == 1) {
+                this.bomb.anims.play('ticking', true);
+            }
+
             if (this.timer_time == 0) {
                 this.timer_event.loop = false;
 
