@@ -9,6 +9,7 @@ export class Player {
         this.max_hp = hp;
         this.throw_vel = throw_vel;
         this.diffuse_time = diffuse_time;
+        this.is_alive = true;
 
         this.health_bar = new ProgressBar(scene, 10, 10, 300, 20, 3, 0xff2d00, 0x222222);
         this.health_bar.update(1);
@@ -70,6 +71,7 @@ export class Player {
         this.right_key = scene.input.keyboard.addKey('D');
         this.up_key = scene.input.keyboard.addKey('W');
         this.pickup_key = scene.input.keyboard.addKey('SPACE');
+        this.die_key = scene.input.keyboard.addKey('K');
     }
 
     get_closest_bomb()
@@ -252,6 +254,10 @@ export class Player {
             this.update_diffuse_bar_pos()
             this.diffuse_bar.update(this.diffuse_timer.getOverallProgress());
         }
+
+        if (this.scene.input.keyboard.checkDown(this.die_key)) {
+            this.gameOver();
+        }
     }
 
     hit() {
@@ -261,7 +267,20 @@ export class Player {
             this.health_bar.update(this.hp / this.max_hp);
         }
         if (this.hp == 0) {
-            console.log("Game over!");
+            this.gameOver();
         }
+    }
+
+    gameOver() {
+        if (!this.is_alive)
+            return;
+        this.scene.time.removeEvent(this.scene.bomb_spawn_event);
+        for (const bomb of this.scene.bombs) {
+            bomb.container.body.setGravityY(0);
+            bomb.container.body.stop();
+        }
+        console.log(this.scene.scene)
+        this.scene.scene.run("DeathScene");
+        this.is_alive = false;
     }
 }
