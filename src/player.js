@@ -24,7 +24,7 @@ export class Player {
         this.container.setSize(this.sprite.width, this.sprite.height);
         this.scene.physics.world.enable(this.container);
         this.scene.physics.add.collider(this.container, this.scene.ground);
-        this.container.body.setCollideWorldBounds(true, 0, 0.3);
+        this.container.body.setCollideWorldBounds(true, 0, 0);
         this.container.body.setGravityY(300);
 
         this.sprite.anims.create({
