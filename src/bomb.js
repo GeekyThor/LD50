@@ -1,7 +1,8 @@
 export class Bomb {
-    constructor(scene, x, y, sprite_name, bomb_width, boom_radius, time_to_boom) {
+    constructor(scene, x, y, sprite_name, bomb_width, boom_radius, time_to_boom, worth) {
         this.scene = scene;
         this.boom_radius = boom_radius;
+        this.worth = worth;
         
         this.bomb = scene.add.sprite(0, 0, sprite_name, 0);
         this.bomb.scale = bomb_width / this.bomb.width;
@@ -100,6 +101,8 @@ export class Bomb {
             this.scene.player.sprite.getBounds()
         )) {
             this.scene.player.hit();
+        } else {
+            this.scene.increase_score(this.worth);
         }
         
         this.boomed = true;
@@ -132,6 +135,6 @@ export class Bomb {
 
 export class SmallBomb extends Bomb {
     constructor(scene, x, y) {
-        super(scene, x, y, 'small_bomb', 15, 25, 5);
+        super(scene, x, y, 'small_bomb', 15, 25, 5, 1);
     }
 }

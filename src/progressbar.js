@@ -9,10 +9,14 @@ export class ProgressBar
         this.color = color;
         this.bgcolor = bgcolor;
         this.offset = this.width * 0.01;
+
         this.progressBox = scene.add.graphics();
-        this.progressBar = scene.add.graphics();
         this.progressBox.fillStyle(this.bgcolor, 0.8);
         this.progressBox.fillRect(x, y, width, height);
+        this.progressBox.setDepth(1);
+
+        this.progressBar = scene.add.graphics();
+        this.progressBar.setDepth(1);
     }
 
     update(progress)

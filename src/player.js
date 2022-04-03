@@ -10,7 +10,7 @@ export class Player {
         this.throw_vel = throw_vel;
         this.diffuse_time = diffuse_time;
 
-        this.health_bar = new ProgressBar(scene, (Consts.CANVAS_WIDTH - 300) / 2, Consts.CANVAS_HEIGHT - 60, 300, 20, 0xff2d00, 0x222222);
+        this.health_bar = new ProgressBar(scene, 10, 10, 300, 20, 0xff2d00, 0x222222);
         this.health_bar.update(1);
         this.diffuse_bar = null;
         
@@ -162,6 +162,7 @@ export class Player {
         if (this.picked_up != null) {
             if (this.picked_up.armed && !this.picked_up.boomed) {
                 this.picked_up.armed = false;
+                this.scene.increase_score(this.picked_up.worth);
                 if (this.picked_up.timer_time > 1) {
                     this.picked_up.bomb.anims.play('diffused');
                 } else {
