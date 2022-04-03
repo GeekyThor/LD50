@@ -24,8 +24,9 @@ export class Player {
         this.container.setSize(this.sprite.width, this.sprite.height);
         this.scene.physics.world.enable(this.container);
         this.scene.physics.add.collider(this.container, this.scene.ground);
-        this.container.body.setCollideWorldBounds(true, 0, 0.3);
+        this.container.body.setCollideWorldBounds(true, 0, 0);
         this.container.body.setGravityY(300);
+        this.container.body.setMass(5);
 
         this.sprite.anims.create({
             key: 'idle',
@@ -109,7 +110,7 @@ export class Player {
         }
         
         var closest = this.get_closest_bomb();
-        if (closest[1] != null && closest[1] <= 10)
+        if (closest[1] != null && closest[1] <= 30)
         {
             this.picked_up = closest[0];
 
@@ -147,7 +148,6 @@ export class Player {
         )
         this.picked_up.container.body.setGravityY(300);
 
-        this.picked_up = null;
         if (this.diffuse_timer != null)
             this.diffuse_timer.remove();
         if (this.diffuse_bar != null)
@@ -155,6 +155,7 @@ export class Player {
             this.diffuse_bar.destroy();
             this.diffuse_bar = null;
         }
+        this.picked_up = null;
     }
 
     diffuse()
@@ -188,7 +189,6 @@ export class Player {
         if (this.picked_up != null)
         {
             if (this.picked_up.boomed) {
-                this.picked_up = null;
                 this.diffuse_bar.destroy();
                 this.diffuse_bar = null;
                 this.picked_up = null;

@@ -58,6 +58,8 @@ export class GameScene extends Phaser.Scene {
             new_bomb.colliders.push(collider);
             bomb.colliders.push(collider);
         }
+        var player_collider = this.physics.add.collider(new_bomb.container, this.player.container);
+        new_bomb.colliders.push(player_collider);
         this.bombs.push(new_bomb);
     }
 
