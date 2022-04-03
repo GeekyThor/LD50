@@ -14,7 +14,6 @@ export class GameScene extends Phaser.Scene {
             new BombGameContext(SmallBomb, 0, 0.05, 0.05),
             new BombGameContext(NukeBomb, 20, 0.001, 0.001)
         ]);
-        this.elapsed_time = 0.0;
     }
 
     preload() {
@@ -30,6 +29,8 @@ export class GameScene extends Phaser.Scene {
         this.add.image(Consts.CANVAS_WIDTH / 2, Consts.CANVAS_HEIGHT / 2, 'background');
 
         this.physics.world.setBounds(0, 0, Consts.CANVAS_WIDTH, Consts.CANVAS_HEIGHT - Consts.GROUND_HEIGHT);
+
+        this.elapsed_time = 0.0;
 
         this.score = 0;
         var score_text_1 = this.add.text(Consts.CANVAS_WIDTH - 10, 5, 'Score:', { fontSize: 40, fontFamily: "Arial" });
