@@ -109,7 +109,7 @@ export class Player {
         }
         
         var closest = this.get_closest_bomb();
-        if (closest[1] != null && closest[1] <= 10)
+        if (closest[1] != null && closest[1] <= 30)
         {
             this.picked_up = closest[0];
 
