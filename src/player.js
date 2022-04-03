@@ -12,6 +12,7 @@ export class Player {
 
         this.health_bar = new ProgressBar(scene, (Consts.CANVAS_WIDTH - 300) / 2, Consts.CANVAS_HEIGHT - 60, 300, 20, 0xff2d00, 0x222222);
         this.health_bar.update(1);
+        this.diffuse_bar = null;
         
         this.sprite = this.scene.physics.add.sprite(0, 0, 'player', 0);
         this.hands_up = this.scene.add.image(0, -this.sprite.height / 2, 'player-handsup', 0);
@@ -116,13 +117,15 @@ export class Player {
             this.picked_up.container.body.setVelocity(this.container.body.velocity.x, this.container.body.velocity.y);
             this.picked_up.container.x = this.container.x;
             this.picked_up.container.y = this.container.y - this.sprite.height / 2 - this.picked_up.container.height / 2;
-
+            if (!this.picked_up.armed)
+                return;
             this.diffuse_timer = this.scene.time.addEvent({
                 callback: this.diffuse,
                 callbackScope: this,
                 delay: this.diffuse_time,
                 loop: false
             });;
+            this.diffuse_bar = new ProgressBar(this.scene, this.container.x, this.container.y, Consts.PLAYER_WIDTH + 10, 10, 0x40d300, 0x222222);
         }
     }
 
@@ -147,6 +150,11 @@ export class Player {
         this.picked_up = null;
         if (this.diffuse_timer != null)
             this.diffuse_timer.remove();
+        if (this.diffuse_bar != null)
+        {
+            this.diffuse_bar.destroy();
+            this.diffuse_bar = null;
+        }
     }
 
     diffuse()
@@ -154,9 +162,14 @@ export class Player {
         if (this.picked_up != null) {
             if (this.picked_up.armed && !this.picked_up.boomed) {
                 this.picked_up.armed = false;
-                console.log("Diffuse!");
             }
         }
+    }
+
+    update_diffuse_bar_pos()
+    {
+        this.diffuse_bar.x = this.container.x - Consts.PLAYER_WIDTH / 2 - 5;
+        this.diffuse_bar.y = this.container.y - Consts.PLAYER_HEIGHT - 23;
     }
 
     update()
@@ -170,20 +183,21 @@ export class Player {
         {
             if (this.picked_up.boomed) {
                 this.picked_up = null;
-            } else {    
+                this.diffuse_bar.destroy();
+                this.diffuse_bar = null;
+                this.picked_up = null;
+            } else {
                 this.picked_up.container.body.setVelocity(this.container.body.velocity.x, this.container.body.velocity.y);
                 this.picked_up.container.x = this.container.x;
                 this.picked_up.container.y = this.container.y - this.sprite.height / 2 - this.picked_up.container.height / 2;
             }
-        }    
+        }
 
         // Throw
         if (this.scene.input.activePointer.leftButtonDown())
         {
             this.handle_throw();
         }
-
-        // Diffuse
 
         // Movement
         if (this.scene.input.keyboard.checkDown(this.left_key)) {
@@ -218,6 +232,13 @@ export class Player {
         if (this.scene.input.keyboard.checkDown(this.up_key) && this.container.body.onFloor())
         {
             this.container.body.setVelocityY(-200);
+        }
+
+        // Diffuse
+        if (this.diffuse_bar != null)
+        {
+            this.update_diffuse_bar_pos()
+            this.diffuse_bar.update(this.diffuse_timer.getOverallProgress());
         }
     }
 

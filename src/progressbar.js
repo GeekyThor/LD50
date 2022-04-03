@@ -18,7 +18,15 @@ export class ProgressBar
     update(progress)
     {
         this.progressBar.clear();
+        this.progressBox.clear();
+        this.progressBox.fillRect(this.x, this.y, this.width, this.height);
         this.progressBar.fillStyle(this.color, 1);
         this.progressBar.fillRect(this.x + this.offset, this.y + this.offset, (this.width - 2 * this.offset) * progress, this.height - 2 * this.offset);
+    }
+
+    destroy()
+    {
+        this.progressBar.destroy();
+        this.progressBox.destroy();
     }
 }
