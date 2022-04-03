@@ -57,7 +57,6 @@ export class Bomb {
                 this.boomed = true;
                 for (var collider of this.colliders) {
                     if (collider.world != null) {
-                        console.log(collider.world.colliders);
                         collider.destroy();
                     }
                 }
