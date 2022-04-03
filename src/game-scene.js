@@ -31,7 +31,7 @@ export class GameScene extends Phaser.Scene {
             callback: this.spawn_bomb,
             callbackScope: this,
             delay: 100,
-            loop: false
+            loop: true
         });
     }
 
