@@ -162,6 +162,11 @@ export class Player {
         if (this.picked_up != null) {
             if (this.picked_up.armed && !this.picked_up.boomed) {
                 this.picked_up.armed = false;
+                if (this.picked_up.timer_time > 1) {
+                    this.picked_up.bomb.anims.play('diffused');
+                } else {
+                    this.picked_up.bomb.anims.play('diffused-short');
+                }
             }
         }
     }

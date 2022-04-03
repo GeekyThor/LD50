@@ -5,12 +5,29 @@ export class Bomb {
         
         this.bomb = scene.add.sprite(0, 0, sprite_name, 0);
         this.bomb.scale = bomb_width / this.bomb.width;
+        
+        this.bomb.anims.create({
+            key: 'normal',
+            frames: [ { key: sprite_name, frame: 0 }],
+            frameRate: 4
+        });
         this.bomb.anims.create({
             key: 'flashing',
             frames: this.bomb.anims.generateFrameNumbers(sprite_name, { start: 1, end: 2 }),
             frameRate: 4,
             repeat: -1
         });
+        this.bomb.anims.create({
+            key: 'diffused',
+            frames: [ { key: sprite_name, frame: 3 }],
+            frameRate: 4
+        });
+        this.bomb.anims.create({
+            key: 'diffused-short',
+            frames: [ { key: sprite_name, frame: 4 }],
+            frameRate: 4
+        });
+        this.bomb.anims.play('normal');
 
         this.timer_time = time_to_boom;
         this.timer_text = scene.add.text(-5, -4, String(Math.ceil(this.timer_time)));
