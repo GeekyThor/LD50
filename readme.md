@@ -4,7 +4,8 @@
 **A** and **D** to move left and right.  
 **W** to jump.  
 **Space** to pick up a bomb and start diffusing it.  
-Aim and throw with the **LMB** (left mouse button).
+Aim and throw with the **LMB** (left mouse button).  
+**Tip:** Holding space continuously makes picking up bombs easier.
 
 ## Play online
 https://mrnomm.itch.io/ticktock
