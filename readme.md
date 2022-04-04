@@ -11,8 +11,8 @@ https://mrnomm.itch.io/ticktock
 
 ## Build and run locally
 ```sh
-git clone git@github.com:GeekyThor/LD50.git
-cd LD50
+git clone git@github.com:GeekyThor/TickTock.git
+cd TickTock
 npm install .
 npm start
 ```
